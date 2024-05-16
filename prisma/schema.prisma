@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Mentee {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  gender             String
+  currentLocation    String
+  currentStatus      String // "Working" or "Student"
+  undergraduateGPA   Float
+  classRank          Int?
+  greTotalScore      Int?
+  greQuantitative    Int?
+  greVerbal          Int?
+  greAWA             Float?
+  toeflTotalScore    Int?
+  toeflSpeaking      Int?
+  toeflWriting       Int?
+  toeflReading       Int?
+  toeflListening     Int?
+
+  resumeLink         String?
+  sopLink            String?
+  lorsLink           String?
+  
+  academics          Academic?
+  publications       Publication[]
+  coCurriculars      CoCurricular[]
+  extraCurriculars   ExtraCurricular[]
+  professionalExps   ProfessionalExp[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Academic {
+  id                 Int      @id @default(autoincrement())
+  institutionName    String
+  degreeName         String
+  major              String
+  minor              String?
+  gpa                Float
+  menteeId           Int      @unique
+  mentee             Mentee   @relation(fields: [menteeId], references: [id])
+  courseWorks        CourseWork[]
+}
+
+model CourseWork {
+  id                 Int      @id @default(autoincrement())
+  courseName         String
+  grade              String
+  academicId         Int
+  academic           Academic @relation(fields: [academicId], references: [id])
+}
+
+model CoCurricular {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  organisation       String
+  description        String
+  menteeId           Int
+  mentee             Mentee   @relation(fields: [menteeId], references: [id])
+}
+
+model ExtraCurricular {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  organisation       String
+  description        String
+  menteeId           Int
+  mentee             Mentee   @relation(fields: [menteeId], references: [id])
+}
+
+model ProfessionalExp {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  startDate          DateTime
+  endDate            DateTime?
+  companyName        String
+  description        String
+  awardsRecognition  String?
+  numberOfPromotions Int?
+  menteeId           Int?
+  mentee             Mentee?      @relation(fields: [menteeId], references: [id])
+  mentorId           Int?
+  mentor             Mentor?      @relation(fields: [mentorId], references: [id])
+}
+
+model Publication {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  journalName        String
+  link               String?
+  menteeId           Int?
+  mentee             Mentee?      @relation(fields: [menteeId], references: [id])
+  mentorId           Int?
+  mentor             Mentor?      @relation(fields: [mentorId], references: [id])
+}
+
+model Mentor {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  gender             String
+  currentLocation    String
+  currentStatus      String // "Working" or "Student"
+
+  postGraduateInstitution String
+  postGraduateDegree      String
+  programName             String
+  universityName          String
+  underGradInstitution    String 
+  underGradDegree         String
+
+  publications       Publication[]
+  professionalExps   ProfessionalExp[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
